@@ -1,0 +1,47 @@
+---
+version: "3"
+name: wyga-docker-mirror
+
+x-logging:
+  &compact-logging
+  options:
+    max-file: "5"
+    max-size: "25M"
+    compress: "true"
+
+services:
+  wyga-site-gateway:
+    image: wyga/wyga-site
+    logging: *compact-logging
+    container_name: wyga-site-gateway
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
+    ports:
+      - 100.100.100.100:443:443
+    environment:
+      WYGA_SITE_LOGLEVEL: "${WYGA_SITE_LOGLEVEL:-error}"
+      WYGA_SITE_ACCESSLOG: "${WYGA_SITE_ACCESSLOG:-false}"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+
+  wyga-docker-mirror:
+    image: registry:2
+    container_name: wyga-docker-mirror
+    restart: unless-stopped
+    logging: *compact-logging
+    labels:
+      - wyga.expose=mirror.e.wyga.site
+    environment:
+      REGISTRY_PROXY_REMOTEURL: "https://registry-1.docker.io"
+      REGISTRY_HTTP_SECRET:     "${WYGA_DOCKER_MIRROR_SECRET:-super-easy-barely-an-inconvenience}"
+    volumes:
+      - mirror:/var/lib/registry
+
+volumes:
+  mirror:
+    name: wyga-docker-mirror
+
+networks:
+  default:
+    name: wyga-site
