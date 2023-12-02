@@ -14,6 +14,10 @@ Check out [docker-shell](https://github.com/rjsocha/wyga-docker-shell) for Gitla
 
 # Setup
 
+## Quick
+```
+curl -sf https://raw.githubusercontent.com/rjsocha/mirror-service/master/deploy | bash -s
+```
 ## Install
 ```
 mkdir -p /service && cd $_
