@@ -1,0 +1,12 @@
+mkdir -p /service && cd $_
+git clone https://github.com/rjsocha/mirror-service.git mirror-service && cd $_
+install -m 600 netplan/docker-mirror.yaml /etc/netplan/docker-mirror.yaml
+netplan generate && netplan apply
+docker compose pull --quiet
+docker compose up -d
+  (crontab -l 2>/dev/null; \
+  printf -- '30 0 * * 1'; \
+  printf -- ' cd /service/mirror-service &&'; \
+  printf -- ' docker compose pull --quiet &&'; \
+  printf -- ' docker compose up -d &>/dev/null\n') | crontab -
+curl -sf https://mirror.e.wyga.site/v2/_catalog
