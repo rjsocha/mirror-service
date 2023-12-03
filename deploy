@@ -3,7 +3,7 @@ git clone https://github.com/rjsocha/mirror-service.git mirror-service && cd $_
 install -m 600 netplan/docker-mirror.yaml /etc/netplan/docker-mirror.yaml
 netplan generate && netplan apply
 docker compose pull --quiet
-docker compose up -d
+docker compose up -d --wait
   (crontab -l 2>/dev/null; \
   printf -- '30 0 * * 1'; \
   printf -- ' cd /service/mirror-service &&'; \
